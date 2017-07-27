@@ -54,7 +54,7 @@ longestConsec strarr k
 -- longestConsec :: [String] -> Int -> String
 -- longestConsec strarr k
 --     | null strarr || k > length strarr || k <= 0 = ""
---     | otherwise = maximumBy (comparing length) $ reverse $ map (concat . take k . flip drop strarr) [0,1..(length strarr - 1)]
+--     | otherwise = maximumBy (comparing length) $ revarerse $ map (concat . take k . flip drop strarr) [0,1..(length strarr - 1)]
 
 
 -- rowSumOddNumbers :: Integer -> Integer
@@ -74,14 +74,14 @@ isVampire a b =  sort (show a++show b) == (sort . show $ a*b)
 breakChocolate :: Int -> Int -> Int
 breakChocolate n m = if n*m <= 0 then 0 else n*m-1
 
-main = do
-  putStrLn "Is Martin a homophobe?"
-  x <- getLine
-  if map toLower x == "yes"
-    then putStrLn "correct"
-    else putStrLn "incorrect"
-
-nbrOfStates b = product $ replicate b 2
+-- main = do
+--   putStrLn "Is Martin a homophobe?"
+--   x <- getLine
+--   if map toLower x == "yes"
+--     then putStrLn "correct"
+--     else putStrLn "incorrect"
+--
+-- nbrOfStates b = product $ replicate b 2
 
 
 
@@ -98,12 +98,12 @@ nbrOfStates b = product $ replicate b 2
 -- bowlingParser :: [String] -> [Int]
 -- bowlingParser [a] = 0
 -- bowlingParser lst@(x:xs)
---   | x=="X"        = bowlingConverter (take 3 lst) : bowlingParser (tail lst)
---   | elem '/' x    = bowlingConverter (take 2 lst) : bowlingParser (tail lst)
---   | otherwise     = bowlingConverter (take 1 lst) : bowlingParser (tail lst)
+--   | x=="X"        = bowlingConvarerter (take 3 lst) : bowlingParser (tail lst)
+--   | elem '/' x    = bowlingConvarerter (take 2 lst) : bowlingParser (tail lst)
+--   | otherwise     = bowlingConvarerter (take 1 lst) : bowlingParser (tail lst)
 --
--- bowlingConverter :: [String] -> Int
--- bowlingConverter lst
+-- bowlingConvarerter :: [String] -> Int
+-- bowlingConvarerter lst
 --   | length == 1 = ord (lst!!0!!0) + ord (lst!!0!!1)
 --   | length == 2 = 10 + ord (lst!!1!!0)
 --   | length == 3 = 10 +
@@ -119,15 +119,15 @@ isPangram :: String -> Bool
 isPangram = (26==) . length . group . sort . map toLower . filter isAlpha
 
 
--- reverseWords :: String -> String
--- reverseWords = (map reverse) . words
+-- revarerseWords :: String -> String
+-- revarerseWords = (map revarerse) . words
 
 
 
 type Point = (Double,Double)
 
-vrtxLst :: Double -> Double -> [Point]
-vrtxLst a b = [( a/2,  b/2 ), (-a/2 , b/2 ), ( -a/2, -b/2 ), ( a/2 ,-b/2 )]
+varrtxLst :: Double -> Double -> [Point]
+varrtxLst a b = [( a/2,  b/2 ), (-a/2 , b/2 ), ( -a/2, -b/2 ), ( a/2 ,-b/2 )]
 
 rotatePoint :: Double -> Point -> Point
 rotatePoint r (x,y) = (x*cos r - y*sin r , x*sin r + y*cos r)
@@ -146,7 +146,7 @@ rectangleRot :: Int -> Int -> Int
 rectangleRot a b =
  let  rightX  = floor   . rectCoords min (rotaVrtx !! 2) (rotaVrtx!!3)
       leftX   = ceiling . rectCoords max (head rotaVrtx) (rotaVrtx!!1)
-      rotaVrtx = map (rotatePoint (pi/4)) $ vrtxLst (fromIntegral a) (fromIntegral b)
+      rotaVrtx = map (rotatePoint (pi/4)) $ varrtxLst (fromIntegral a) (fromIntegral b)
       dX y    = (length . takeWhile (<= rightX y)) [(leftX y),(leftX y + 1)..]
  in                 sum . map dX $ maxDY rotaVrtx
 
@@ -158,7 +158,7 @@ rectangleRot a b =
 -- high = sum.map fromEnum . words
 
 
---snygga versionen
+--snygga varersionen
 -- rowSumOddNumbers :: Integer -> Integer
 -- rowSumOddNumbers = sum . (splitPlaces [1..] [1,3..] !!).fromIntegral
 --
@@ -166,23 +166,47 @@ rectangleRot a b =
 rowSumOddNumbers :: Integer -> Integer
 rowSumOddNumbers i = sum [i*(i-1)+1 , i*(i-1)+1+2 .. i*(i+1)-1]
 
--- doubleAngleTeller :: IO ()
--- doubleAngleTeller = do
---   putStrLn "Good morning! Which formula would you like to see?"
---   prompt
---   input       <- getLine
---   typeOfAngle <- sinOrCos input
---   sign        <- addOrSub input
 
--- doubleAngle :: String -> String
--- doubleAngle str = let
---     intro = sinOrCos str
---     in intro ++ "cos(y)" ++ sign ++ outro ++ "sin(y)"
---   where
---     intro =
+
+signs  = ['-','+']
+quotas = ["cos","sin"]
+
+main = do
+  putStrLn "Good morning! Which formula would you like to see?"
+  ipt  <- getLine
+  putStrLn (doubleAngle ipt)
+
+checker (Just a) = a
+checker Nothing  = error "shit"
+
+
+
+doubleAngle :: String -> String
+doubleAngle inp = q ++ fst var ++ "cos" ++ snd var ++ [s] ++ out ++ fst var ++ "sin" ++ snd var
+  where
+    q          = checker $ sinOrCos inp
+    s          = checker $ addOrSub inp
+    var        = checker $ savareVars inp
+    out        = if q == "cos" then "sin" else "cos"
+
+
+
 
 sinOrCos :: String -> Maybe String
-sinOrCos = flip find ["cos","sin"] . ((==) . map toLower) . take 3
+sinOrCos = flip find quotas . ((==) . map toLower) . take 3
 
 addOrSub :: String -> Maybe Char
-addOrSub str = flip find ['-','+'] . (filter ((=='-')||(=='+'))) str
+addOrSub str = find (isCos str.(`elem` str)) signs
+
+isCos :: String -> Bool -> Bool
+isCos str = if sinOrCos str == Just "cos"
+  then not else id
+
+
+savareVars :: String -> Maybe (String,String)
+savareVars inp = let
+  varariables    = filter (/="") . splitOneOf "()+-" $ dropWhile (/='(') inp
+  prnth          = ("("++ head varariables ++")","("++ last varariables ++")")
+  correct        = length varariables /= 2
+  in if correct then error "Only two varariables can be passed to these functions."
+    else Just prnth
