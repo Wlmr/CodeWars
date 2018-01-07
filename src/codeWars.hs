@@ -1,19 +1,20 @@
 module CodeWars where
-import Data.List
-import Data.Char
-import Data.Ord
-import Data.Time
-import Data.Time.Format
-import Data.List.Split
-import Data.Maybe
+import           Data.Char
+import           Data.List
+import           Data.List.Split
+import           Data.Maybe
+import           Data.Ord
+import           Data.Time
+import           Data.Time.Format
+import           Control.Applicative
 
 findShortest :: String -> Integer
 findShortest = fromIntegral.minimum.map length.words
 
 getMiddle :: String -> String
-getMiddle "" = ""
-getMiddle [a] = [a]
-getMiddle [a,b] = [a,b]
+getMiddle ""     = ""
+getMiddle [a]    = [a]
+getMiddle [a,b]  = [a,b]
 getMiddle (x:xs) = getMiddle (init xs)
 
 persistence :: Int -> Int
@@ -210,3 +211,8 @@ savareVars inp = let
   correct        = length varariables /= 2
   in if correct then error "Only two varariables can be passed to these functions."
     else Just prnth
+
+
+
+maxBallt :: Int -> Int
+maxBallt = round.(*(10/(9.82*3.6))).fromIntegral
